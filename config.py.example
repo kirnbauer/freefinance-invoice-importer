@@ -1,0 +1,15 @@
+# config.py
+from pathlib import Path
+
+USERNAME = "ENTER-YOUR-USERNAME"
+PAIRING_CODE = "ENTER-PAIRING-CODE"
+CLIENT_ID = "ENTER-APP-ID"
+API_URL = "https://app.freefinance.at"
+
+PDF_INPUT_FOLDER = Path("./invoices")
+XML_OUTPUT_FOLDER = Path("./output_xml")
+
+DONE_FOLDER = PDF_INPUT_FOLDER / "done"
+ERROR_FOLDER = PDF_INPUT_FOLDER / "error"
+
+CUSTOMER_NUMBER_PREFIX = "ext"
