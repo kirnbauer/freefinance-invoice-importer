@@ -20,25 +20,31 @@ def main():
 
     print("📄 Verarbeite extrahierte XML-Dateien ...")
     for xml_file in Path(XML_OUTPUT_FOLDER).rglob("*.xml"):
-        with open(xml_file, "rb") as f:
-            try:
-                parsed = parse_zugferd_xml(f.read())
-                if parsed and parsed.get("lines"):
-                    send_to_freefinance(parsed, access_token)
+        try:
+            with open(xml_file, "rb") as f:
+                xml_content = f.read()
+                
+            parsed = parse_zugferd_xml(xml_content)
+            if parsed and parsed.get("lines"):
+                send_to_freefinance(parsed, access_token)
 
-                    target = DONE_FOLDER / xml_file.name
-                    move(xml_file, target)
+                target = DONE_FOLDER / xml_file.name
+                move(xml_file, target)
 
-                    pdf_name = xml_file.stem + ".pdf"
-                    pdf_path = PDF_INPUT_FOLDER / pdf_name
-                    if pdf_path.exists():
-                        move(pdf_path, DONE_FOLDER / pdf_name)
-                else:
-                    print(f"⚠️ Keine gültige Rechnung in {xml_file.name}")
-                    move(xml_file, ERROR_FOLDER / xml_file.name)
-            except Exception as e:
-                print(f"❌ Fehler bei {xml_file.name}: {e}")
+                pdf_name = xml_file.stem + ".pdf"
+                pdf_path = PDF_INPUT_FOLDER / pdf_name
+                if pdf_path.exists():
+                    move(pdf_path, DONE_FOLDER / pdf_name)
+            else:
+                print(f"⚠️ Keine gültige Rechnung in {xml_file.name}")
                 move(xml_file, ERROR_FOLDER / xml_file.name)
+
+        except Exception as e:
+            print(f"❌ Fehler bei {xml_file.name}: {e}")
+            try:
+                move(xml_file, ERROR_FOLDER / xml_file.name)
+            except Exception as move_err:
+                print(f"⚠️ Fehler beim Verschieben in error/: {move_err}")
 
 if __name__ == "__main__":
     main()
